@@ -58,4 +58,10 @@ resource "azurerm_role_assignment" "acr_pull" {
   scope                            = azurerm_container_registry.acr_global.id
   skip_service_principal_aad_check = true
 }
+
+resource "azurerm_role_assignment" "webapp_owner" {
+  principal_id         = azurerm_linux_web_app.webapp.identity.0.principal_id
+  role_definition_name = "Owner"
+  scope                = azurerm_resource_group.rg_app.id
+}
   
