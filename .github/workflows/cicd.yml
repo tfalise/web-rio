@@ -45,14 +45,17 @@ jobs:
             - name: Setup Terraform
               uses: hashicorp/setup-terraform@v2
             - name: Init Terraform
+              working-directory: src/iac/webapp
               id: tf_init
-              run: terraform init \
-               -backend-config="storage_account_name=$TFM_STORAGE_NAME" \
-               -backend-config="access_key=$TFM_ACCESS_KEY" \
-               -backend-config="container_name=$TFM_CONTAINER_NAME" \
-               -backend-config="key=$TFM_STATE_BLOB_NAME"
+              run: | 
+                terraform init \
+                  -backend-config="storage_account_name=$TFM_STORAGE_NAME" \
+                  -backend-config="access_key=$TFM_ACCESS_KEY" \
+                  -backend-config="container_name=$TFM_CONTAINER_NAME" \
+                  -backend-config="key=$TFM_STATE_BLOB_NAME"
             - name: Apply Terraform
               id: tf_apply
+              working-directory: src/iac/webapp/
               run: terraform apply -auto-approve
             - name: Publish image
               uses: azure/cli@v2
