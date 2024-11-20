@@ -6,7 +6,6 @@ on:
       - master
 
 # needs
-# -gitversion calculation
 # - generate docker image with proper tag
 # deploy to dev
 # deploy to prod
