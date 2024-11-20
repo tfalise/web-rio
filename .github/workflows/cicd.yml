@@ -61,7 +61,7 @@ jobs:
             - name: Apply Terraform (webapp)
               working-directory: src/iac/webapp/
               run: |
-                terraform apply -auto-approve
+                terraform apply -auto-approve \
                   -var="docker-version=${{ steps.gitversion.outputs.shortSha }}"
 
                   
