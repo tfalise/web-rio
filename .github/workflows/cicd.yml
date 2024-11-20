@@ -10,6 +10,12 @@ on:
 # deploy to dev
 # deploy to prod
 
+env:
+  TFM_STORAGE_NAME: ${{ secrets.TFM_STORAGE_NAME }}
+  TFM_CONTAINER_NAME: ${{ secrets.TFM_CONTAINER_NAME }}
+  TFM_STATE_BLOB_NAME: ${{ secrets.TFM_STATE_BLOB_NAME }}
+  TFM_ACCESS_KEY: ${{ secrets.TFM_ACCESS_KEY }}
+
 permissions:
   id-token: write
   contents: read
@@ -36,6 +42,14 @@ jobs:
                 client-id: ${{ secrets.AZURE_CLIENT_ID }}
                 tenant-id: ${{ secrets.AZURE_TENANT_ID }}
                 subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v2
+            - name: Init Terraform
+              id: tf_init
+              run: terraform init -backend-config="storage_account_name=$TFM_STORAGE_NAME" -backend_config="access_key=$TFM_ACCESS_KEY" -backend_config="container_name=$TFM_CONTAINER_NAME" -backend_config="key=$TFM_STATE_BLOB_NAME"
+            - name: Apply Terraform
+              id: tf_apply
+              run: terraform apply -auto-approve
             - name: Publish image
               uses: azure/cli@v2
               with:
