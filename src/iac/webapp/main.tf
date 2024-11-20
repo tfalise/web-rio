@@ -42,7 +42,7 @@ resource "azurerm_linux_web_app" "webapp" {
     always_on = true
     container_registry_use_managed_identity = true
     application_stack {
-      docker_image_name = "tfalise/webrio"
+      docker_image_name = "tfalise/webrio:${var.docker-version}"
       docker_registry_url = "https://${azurerm_container_registry.acr_global.login_server}"
     }
   }

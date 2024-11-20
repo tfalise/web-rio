@@ -60,6 +60,8 @@ jobs:
                   -backend-config="key=$TFM_STATE_BLOB_NAME"
             - name: Apply Terraform (webapp)
               working-directory: src/iac/webapp/
-              run: terraform apply -auto-approve
+              run: |
+                terraform apply -auto-approve
+                  -var="docker-version=${{ steps.gitversion.outputs.shortSha }}"
 
                   
