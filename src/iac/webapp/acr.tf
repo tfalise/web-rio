@@ -4,7 +4,8 @@ import {
 }
 
 resource "azurerm_container_registry" "acr_global" {
-    name                  = "acrwebrioglobal"
-    location              = data.azurerm_container_registry.acr_global.location
-    resource_group_name   = data.azurerm_container_registry.acr_global.resource_group_name
+    name                    = "acrwebrioglobal"
+    location                = data.azurerm_container_registry.acr_global.location
+    resource_group_name     = data.azurerm_container_registry.acr_global.resource_group_name
+    sku                     = data.azurerm_container_registry.acr_global.sku
 }
