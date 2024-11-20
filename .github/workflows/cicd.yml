@@ -46,7 +46,7 @@ jobs:
               uses: hashicorp/setup-terraform@v2
             - name: Init Terraform
               id: tf_init
-              run: terraform init -backend-config="storage_account_name=$TFM_STORAGE_NAME" -backend_config="access_key=$TFM_ACCESS_KEY" -backend_config="container_name=$TFM_CONTAINER_NAME" -backend_config="key=$TFM_STATE_BLOB_NAME"
+              run: terraform init -backend-config="storage_account_name=${{ secrets.TFM_STORAGE_NAME }}" -backend_config="access_key=${{ secrets.TFM_CONTAINER_NAME }}" -backend_config="container_name=${{ secrets.TFM_STATE_BLOB_NAME }}" -backend_config="key=${{ secrets.TFM_ACCESS_KEY }}"
             - name: Apply Terraform
               id: tf_apply
               run: terraform apply -auto-approve
