@@ -51,7 +51,7 @@ jobs:
                 inlineScript: |
                   az acr build --registry acrwebriodev --image tfalise/webrio:${{ steps.gitversion.outputs.shortSha }} --file src/app/Dockerfile src/app/
             - name: Init Terraform (webapp)
-              working-directory: src/iac/common/
+              working-directory: src/iac/webapp/
               run: | 
                 terraform init \
                   -backend-config="storage_account_name=$TFM_STORAGE_NAME" \
@@ -59,7 +59,7 @@ jobs:
                   -backend-config="container_name=$TFM_CONTAINER_NAME" \
                   -backend-config="key=$TFM_STATE_BLOB_NAME"
             - name: Apply Terraform (webapp)
-              working-directory: src/iac/common/
+              working-directory: src/iac/webapp/
               run: terraform apply -auto-approve
 
                   
