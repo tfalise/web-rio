@@ -49,7 +49,7 @@ jobs:
               with:
                 azcliversion: latest
                 inlineScript: |
-                  az acr build --registry acrwebriodev --image tfalise/webrio:${{ steps.gitversion.outputs.shortSha }} --file src/app/Dockerfile src/app/
+                  az acr build --registry acrwebrioglobal --image tfalise/webrio:${{ steps.gitversion.outputs.shortSha }} --file src/app/Dockerfile src/app/
             - name: Init Terraform (webapp)
               working-directory: src/iac/webapp/
               run: | 
