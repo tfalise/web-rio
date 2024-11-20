@@ -44,18 +44,16 @@ jobs:
                 subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
             - name: Setup Terraform
               uses: hashicorp/setup-terraform@v2
-            - name: Init Terraform
-              working-directory: src/iac/webapp
-              id: tf_init
+            - name: Init Terraform (common)
+              working-directory: src/iac/common/
               run: | 
                 terraform init \
                   -backend-config="storage_account_name=$TFM_STORAGE_NAME" \
                   -backend-config="access_key=$TFM_ACCESS_KEY" \
                   -backend-config="container_name=$TFM_CONTAINER_NAME" \
                   -backend-config="key=$TFM_STATE_BLOB_NAME"
-            - name: Apply Terraform
-              id: tf_apply
-              working-directory: src/iac/webapp/
+            - name: Apply Terraform (common)
+              working-directory: src/iac/common/
               run: terraform apply -auto-approve
             - name: Publish image
               uses: azure/cli@v2
@@ -63,4 +61,16 @@ jobs:
                 azcliversion: latest
                 inlineScript: |
                   az acr build --registry acrwebriodev --image tfalise/webrio:${{ steps.gitversion.outputs.shortSha }} --file src/app/Dockerfile src/app/
+            - name: Init Terraform (webapp)
+              working-directory: src/iac/common/
+              run: | 
+                terraform init \
+                  -backend-config="storage_account_name=$TFM_STORAGE_NAME" \
+                  -backend-config="access_key=$TFM_ACCESS_KEY" \
+                  -backend-config="container_name=$TFM_CONTAINER_NAME" \
+                  -backend-config="key=$TFM_STATE_BLOB_NAME"
+            - name: Apply Terraform (webapp)
+              working-directory: src/iac/common/
+              run: terraform apply -auto-approve
+
                   
