@@ -13,7 +13,6 @@ jobs:
     build:
         name: Build and publish
         runs-on: ubuntu-latest
-        environment: dev
         outputs:
             docker-version: ${{ steps.gitversion.outputs.shortSha }}
         steps:
@@ -46,4 +45,5 @@ jobs:
       uses: ./.github/workflows/deploy.yml
       with:
         environment: dev
-        version: ${{ needs.Build.outputs.docker-version }}
+        version: ${{ needs.build.outputs.docker-version }}
+      secrets: inherit
