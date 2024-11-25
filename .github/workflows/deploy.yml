@@ -1,0 +1,45 @@
+name: Deploy
+on:
+    workflow_call: 
+        inputs:
+            environment:
+                type: string
+                required: true
+            version:
+                type: string
+                required: true
+                
+permissions:
+  id-token: write
+  contents: read
+
+env:
+    TFM_STORAGE_NAME: ${{ secrets.TFM_STORAGE_NAME }}
+    TFM_CONTAINER_NAME: ${{ secrets.TFM_CONTAINER_NAME }}
+    TFM_STATE_BLOB_NAME: ${{ secrets.TFM_STATE_BLOB_NAME }}
+    TFM_ACCESS_KEY: ${{ secrets.TFM_ACCESS_KEY }}
+
+jobs:
+    Deploy:
+        runs-on: ubuntu-latest
+        environment: ${{ inputs.environment }}
+        steps:
+            - name: Check out repository code
+              uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v3.1.2
+            - name: Init Terraform (webapp)
+              working-directory: src/iac/webapp/
+              run: | 
+                terraform init \
+                    -backend-config="storage_account_name=$TFM_STORAGE_NAME" \
+                    -backend-config="access_key=$TFM_ACCESS_KEY" \
+                    -backend-config="container_name=$TFM_CONTAINER_NAME" \
+                    -backend-config="key=$TFM_STATE_BLOB_NAME"
+            - name: Apply Terraform (webapp)
+              working-directory: src/iac/webapp/
+              run: |
+                terraform apply -auto-approve \
+                    -var="docker-version=${{ inputs.version }}"

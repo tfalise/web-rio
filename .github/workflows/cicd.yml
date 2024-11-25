@@ -5,25 +5,17 @@ on:
     branches:
       - master
 
-# needs
-# - generate docker image with proper tag
-# deploy to dev
-# deploy to prod
-
-env:
-  TFM_STORAGE_NAME: ${{ secrets.TFM_STORAGE_NAME }}
-  TFM_CONTAINER_NAME: ${{ secrets.TFM_CONTAINER_NAME }}
-  TFM_STATE_BLOB_NAME: ${{ secrets.TFM_STATE_BLOB_NAME }}
-  TFM_ACCESS_KEY: ${{ secrets.TFM_ACCESS_KEY }}
-
 permissions:
   id-token: write
   contents: read
 
 jobs:
-    Build:
+    build:
+        name: Build and publish
         runs-on: ubuntu-latest
         environment: dev
+        outputs:
+            docker-version: ${{ steps.gitversion.outputs.shortSha }}
         steps:
             - name: Check out repository code
               uses: actions/checkout@v4
@@ -42,26 +34,15 @@ jobs:
                 client-id: ${{ secrets.AZURE_CLIENT_ID }}
                 tenant-id: ${{ secrets.AZURE_TENANT_ID }}
                 subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-            - name: Setup Terraform
-              uses: hashicorp/setup-terraform@v3.1.2
             - name: Publish image
               uses: azure/cli@v2
               with:
                 azcliversion: latest
                 inlineScript: |
                   az acr build --registry acrwebrioglobal --image tfalise/webrio:${{ steps.gitversion.outputs.shortSha }} --file src/app/Dockerfile src/app/
-            - name: Init Terraform (webapp)
-              working-directory: src/iac/webapp/
-              run: | 
-                terraform init \
-                  -backend-config="storage_account_name=$TFM_STORAGE_NAME" \
-                  -backend-config="access_key=$TFM_ACCESS_KEY" \
-                  -backend-config="container_name=$TFM_CONTAINER_NAME" \
-                  -backend-config="key=$TFM_STATE_BLOB_NAME"
-            - name: Apply Terraform (webapp)
-              working-directory: src/iac/webapp/
-              run: |
-                terraform apply -auto-approve \
-                  -var="docker-version=${{ steps.gitversion.outputs.shortSha }}"
-
-                  
+    deploy-dev:
+      name: Deploy to dev
+      uses: ./.github/workflows/deploy.yml
+      with:
+        environment: dev
+        version: ${{ needs.Build.outputs.docker-version }}
