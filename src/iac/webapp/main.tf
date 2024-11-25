@@ -43,7 +43,7 @@ resource "azurerm_linux_web_app" "webapp" {
     container_registry_use_managed_identity = true
     application_stack {
       docker_image_name = "tfalise/webrio:${var.docker-version}"
-      docker_registry_url = "https://${azurerm_container_registry.acr_global.login_server}"
+      docker_registry_url = "https://${data.azurerm_container_registry.acr_global.login_server}"
     }
   }
 
@@ -55,6 +55,6 @@ resource "azurerm_linux_web_app" "webapp" {
 resource "azurerm_role_assignment" "acr_pull" {
   principal_id                     = azurerm_linux_web_app.webapp.identity.0.principal_id
   role_definition_name             = "AcrPull"
-  scope                            = azurerm_container_registry.acr_global.id
+  scope                            = data.azurerm_container_registry.acr_global.id
   skip_service_principal_aad_check = true
 }
