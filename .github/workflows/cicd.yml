@@ -42,6 +42,7 @@ jobs:
                   az acr build --registry acrwebrioglobal --image tfalise/webrio:${{ steps.gitversion.outputs.shortSha }} --file src/app/Dockerfile src/app/
     deploy-dev:
       name: Deploy to dev
+      needs: build
       uses: ./.github/workflows/deploy.yml
       with:
         environment: dev
